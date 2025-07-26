@@ -1,0 +1,24 @@
+- name: Ensure namespace
+  k8s:
+    definition: "{{ lookup('template', 'namespace.yml.j2') }}"
+
+- name: Ensure PVCs
+  k8s:
+    definition: "{{ lookup('template', 'pvc.yml.j2') }}"
+  loop:
+    - mariadb-pvc
+    - wp-content-pvc
+  loop_control:
+    loop_var: pvc_name
+
+- name: Deploy MariaDB
+  k8s:
+    definition: "{{ lookup('template', 'mariadb.yml.j2') }}"
+
+- name: Deploy WordPress
+  k8s:
+    definition: "{{ lookup('template', 'wordpress.yml.j2') }}"
+
+- name: Deploy Nginx web
+  k8s:
+    definition: "{{ lookup('template', 'nginx-deploy.yml.j2') }}"

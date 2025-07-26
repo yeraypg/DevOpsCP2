@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  vars:
+    ns: casopractico2
+    acr: "{{ lookup('env', 'ACR_LOGIN_SERVER') }}"
+  roles:
+    - aks

@@ -1,0 +1,39 @@
+---
+# web  ───────────────────────────────────────────────────────────────
+- name: Build web image (amd64)
+  containers.podman.podman_image:
+    name: "{{ acr_login_server }}/casopractico2:web-amd64"
+    path: "{{ role_path }}/files/web"
+    arch: amd64
+    push: no
+
+# app  ───────────────────────────────────────────────────────────────
+- name: Pull WordPress amd64
+  containers.podman.podman_image:
+    name: "wordpress:6.5.4-php8.2-apache"
+    pull: yes
+    arch: amd64
+    push: no
+
+- name: Tag WordPress as app-amd64
+  containers.podman.podman_tag:
+    image: "docker.io/library/wordpress:6.5.4-php8.2-apache"
+    target_names:
+      - "{{ acr_login_server }}/casopractico2:app-amd64"
+
+# login & push ──────────────────────────────────────────────────────
+- name: Login to ACR
+  containers.podman.podman_login:
+    registry: "{{ acr_login_server }}"
+    username: "{{ acr_admin_username }}"
+    password: "{{ acr_admin_password }}"
+
+- name: Push web-amd64
+  containers.podman.podman_image:
+    name: "{{ acr_login_server }}/casopractico2:web-amd64"
+    push: yes
+
+- name: Push app-amd64
+  containers.podman.podman_image:
+    name: "{{ acr_login_server }}/casopractico2:app-amd64"
+    push: yes

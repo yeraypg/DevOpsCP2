@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: {{ ns }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: mariadb }
+  template:
+    metadata: { labels: { app: mariadb } }
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:11
+        env:
+        - { name: MYSQL_ROOT_PASSWORD, value: "WpRootPass!" }
+        - { name: MYSQL_DATABASE,      value: "wordpress" }
+        - { name: MYSQL_USER,         value: "wpuser" }
+        - { name: MYSQL_PASSWORD,     value: "WpUserPass!" }
+        volumeMounts:
+        - { mountPath: /var/lib/mysql, name: dbdata }
+      volumes:
+      - name: dbdata
+        persistentVolumeClaim:
+          claimName: mariadb-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: {{ ns }}
+spec:
+  selector: { app: mariadb }
+  ports:
+    - port: 3306
+      targetPort: 3306

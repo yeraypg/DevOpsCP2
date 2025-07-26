@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  pre_tasks:
+    - name: Load ACR credentials from environment
+      set_fact:
+        acr_login_server: "{{ lookup('env', 'ACR_LOGIN_SERVER') }}"
+        acr_admin_username: "{{ lookup('env', 'ACR_USER') }}"
+        acr_admin_password: "{{ lookup('env', 'ACR_PASS') }}"
+
+  roles:
+    - acr
